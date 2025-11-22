@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: ms_usuarios
+  config:
+    # Config server url
+    import: configserver:http://localhost:8083
+  
