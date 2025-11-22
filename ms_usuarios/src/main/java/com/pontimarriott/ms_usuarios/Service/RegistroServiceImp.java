@@ -23,6 +23,9 @@ public class RegistroServiceImp implements RegistroService{
     @Autowired
     RepositoryRegistrarse registrarseRepository;
 
+    @Autowired
+    MessageEmpleadoService messageEmpleadoService;
+
     @Value("${keycloak.login-url}")
     private String loginUrl;
 
@@ -88,7 +91,7 @@ public class RegistroServiceImp implements RegistroService{
                 String userId = location.substring(location.lastIndexOf("/") + 1);
                 Empleado usuarioInsertar = new Empleado(userId, user.getNombre(),user.getCorreo());
                 Empleado usuario = registrarseRepository.save(usuarioInsertar);
-        
+                messageEmpleadoService.sendMessageEmpleado(usuario);
                 return usuario;
             }
         }
