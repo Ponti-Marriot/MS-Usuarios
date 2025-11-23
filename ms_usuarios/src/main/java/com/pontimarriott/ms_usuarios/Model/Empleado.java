@@ -8,13 +8,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "empleado")
+@Table(name = "workers")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Empleado {
-    @Id
-    private String id;
+    private String uuid;
     private String nombre;
     private String correo;
 }
