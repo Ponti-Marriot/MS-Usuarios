@@ -101,7 +101,12 @@ public class RegistroServiceImp implements RegistroService{
 
                 //assignEmpleadoRole(userId);
 
-                Empleado usuarioInsertar = new Empleado(userId, user.getNombre(),user.getCorreo());
+
+                //Empleado usuarioInsertar = new Empleado(userId, user.getNombre(),user.getCorreo());
+                Empleado usuarioInsertar = new Empleado();
+                usuarioInsertar.setId_keycloak(userId);
+                usuarioInsertar.setNombre(user.getNombre());
+                usuarioInsertar.setCorreo(user.getCorreo());
                 Empleado usuario = registrarseRepository.save(usuarioInsertar);
                 messageEmpleadoService.sendMessageEmpleado(usuario);
                 return usuario;
