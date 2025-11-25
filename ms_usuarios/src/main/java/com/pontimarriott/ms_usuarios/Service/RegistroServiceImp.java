@@ -67,9 +67,10 @@ public class RegistroServiceImp implements RegistroService{
 
 
     @Override
-    public Empleado registro( EmpleadoNuevo user) {
+    public Empleado registro(EmpleadoNuevo user) {
         RestTemplate restTemplate = new RestTemplate();
 
+        // 1) Registrar en Keycloak
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(getAdminToken());
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -78,7 +79,6 @@ public class RegistroServiceImp implements RegistroService{
         userKeycloak.put("username", user.getCorreo());
         userKeycloak.put("enabled", true);
 
-        // password inicial
         Map<String, Object> credential = new HashMap<>();
         credential.put("type", "password");
         credential.put("value", user.getContrasenia());
@@ -86,11 +86,11 @@ public class RegistroServiceImp implements RegistroService{
 
         userKeycloak.put("credentials", List.of(credential));
 
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(userKeycloak, headers);
+        HttpEntity<Map<String, Object>> requestKeycloak = new HttpEntity<>(userKeycloak, headers);
 
         ResponseEntity<String> response = restTemplate.postForEntity(
                 registerUrl,
-                request,
+                requestKeycloak,
                 String.class
         );
 
@@ -99,15 +99,18 @@ public class RegistroServiceImp implements RegistroService{
             if (location != null) {
                 String userId = location.substring(location.lastIndexOf("/") + 1);
 
-                //assignEmpleadoRole(userId);
+                // 2) Guardar en microservicio de BD (puerto 8088)
+                RestTemplate rest = new RestTemplate();
+                String url = "http://localhost:8088/db/empleados";
 
-
-                //Empleado usuarioInsertar = new Empleado(userId, user.getNombre(),user.getCorreo());
                 Empleado usuarioInsertar = new Empleado();
                 usuarioInsertar.setId_keycloak(userId);
                 usuarioInsertar.setNombre(user.getNombre());
                 usuarioInsertar.setCorreo(user.getCorreo());
-                Empleado usuario = registrarseRepository.save(usuarioInsertar);
+
+                // Si no necesitas headers especiales:
+                Empleado usuario = rest.postForObject(url, usuarioInsertar, Empleado.class);
+
                 messageEmpleadoService.sendMessageEmpleado(usuario);
                 return usuario;
             }
