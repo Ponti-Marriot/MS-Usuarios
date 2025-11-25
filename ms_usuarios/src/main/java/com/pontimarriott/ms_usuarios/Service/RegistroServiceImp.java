@@ -101,7 +101,7 @@ public class RegistroServiceImp implements RegistroService{
 
                 // 2) Guardar en microservicio de BD (puerto 8088)
                 RestTemplate rest = new RestTemplate();
-                String url = "http://localhost:8088/db/empleados";
+                String url = "http://10.43.102.67:8088/db/empleados";
 
                 Empleado usuarioInsertar = new Empleado();
                 usuarioInsertar.setId_keycloak(userId);
